@@ -12,50 +12,54 @@ const searchParams = {s: 0}
 let $ = null // cheerio wrapper object
 
 export function initDatabase (db) {
-  const collection = db.get('posts')
-  collection.drop().then(success => {
+  const posts = db.get('posts')
+  // seperate lines into 5 and 7 syllable collections
+  // faster retreival for random haiku construction by
+  // eliminating need to filter by syllable count
+  const fives = db.get('fives')
+  const sevens = db.get('sevens')
+
+  fives.drop()
+  sevens.drop()
+  posts.drop().then(success => {
     if (!success) throw new Error('Could not drop database')
-    fetchData(db, true)
+    fetchData(db, false) // true will return only yesterday's posts
   })
 }
 
-function fetchData (db, yesterdayOnly) {
-  axios(SEARCH_URL, Object.assign({}, axiosConfig, searchParams))
-  .then(resp => {
-    // if response code error, report error
-    if (resp.status !== 200) throw new Error('Host response error')
+async function fetchData (db, yesterdayOnly) {
+  const resp = await axios(SEARCH_URL, Object.assign({}, axiosConfig, searchParams))
+  if (resp.status !== 200) throw new Error('Host response error')
 
-    // if no elements match critieria, report error
-    $ = cheerio.load(resp.data)
-    const rootElement = $(SEARCH_ROOT)
-    if (!rootElement || rootElement.length <= 0) throw new Error('No root element found')
-    return rootElement
-  }).then(rootElement => {
-    // get and save <a> links from HTML, returns array of strings
-    const links = parseLinks($, rootElement, yesterdayOnly)
-    if (!links || links.length <= 0) throw new Error('No links were found')
-    return links
-  }).then(links => {
-    // create XMLHttp requests for each link
-    return fetchPosts(links, axiosConfig).then(posts => {
-      if (!posts || posts.length <= 0) throw new Error('Unable to retrieve posts')
-      let set = []
-      posts.forEach(post => {
-        if (post.status !== 200) throw new Error('Unexpected result from Craigslist')
-        // create a data object based on the returned HTML data
-        const thisPost = createPostObject(post.data)
-        thisPost && set.push(thisPost)
-      })
-      return set
-    })
-  }).then(set => {
-    parseText(set, db)
+  // load HTML data into Cheerio object
+  $ = cheerio.load(resp.data)
+  const rootElement = $(SEARCH_ROOT)
+  if (!rootElement || rootElement.length <= 0) throw new Error('No root element found')
+
+  // get and save <a> links from HTML, returns array of strings
+  const links = parseLinks($, rootElement, yesterdayOnly)
+  if (!links || links.length <= 0) throw new Error('No links were found')
+
+  // create XMLHttp requests for each link
+  const posts = await fetchPosts(links, axiosConfig)
+  if (!posts || posts.length <= 0) throw new Error('Unable to retrieve posts')
+
+  let postObjects = []
+  posts.forEach(post => {
+    if (post.data.status !== 200) throw new Error('Unexpected result from Craigslist')
+    // create a data object based on the returned HTML data
+    const thisPost = createPostObject(post.data.data, post.link)
+    thisPost && postObjects.push(thisPost)
   })
-  .catch(err => {
-    console.log('Axios', err)
-    this.UIError(err.message)
-    return false
-  })
+
+  console.log(`${postObjects.length} posts inserted`)
+
+  // look for phrases that have syllable pattern matching haiku style
+  parseText(postObjects, db)
+
+  const fiveCount = await db.get('fives').count()
+  const sevenCount = await db.get('sevens').count()
+  console.log(`${fiveCount} fives inserted. ${sevenCount} sevens inserted`)
 }
 
 function cleanWord (word) {
@@ -64,22 +68,26 @@ function cleanWord (word) {
   return cleanWord
 }
 
-export function checkStrings (str, db) {
-  const collection = db.get('lines')
+export function checkStrings (str, db, id) {
+  const fives = db.get('fives')
+  const sevens = db.get('sevens')
   let phrase = ''
   for (let i = 0; i < str.length; i++) {
-    phrase = phrase.concat(` ${cleanWord(str[i])}`).trim()
-    if (syllable(phrase) < 8) {
-      if (syllable(phrase) === 5) {
-        console.log(`5: ${phrase}`)
-        collection.insert({'syllables': '5', 'text': phrase})
-      } else if (syllable(phrase) === 7) {
-        console.log(`7: ${phrase}`)
-        collection.insert({'syllables': '7', 'text': phrase})
+    const newWord = cleanWord(str[i])
+    if (syllable(newWord) > 0) {
+      phrase = phrase.concat(` ${cleanWord(str[i])}`).trim()
+      if (syllable(phrase) < 8) {
+        if (syllable(phrase) === 5) {
+          // console.log(`5: ${phrase}`)
+          fives.insert({'text': phrase, 'postId': id})
+        } else if (syllable(phrase) === 7) {
+          // console.log(`7: ${phrase}`)
+          sevens.insert({'text': phrase, 'postId': id})
+          return
+        }
+      } else {
         return
       }
-    } else {
-      return
     }
   }
 }
@@ -92,7 +100,7 @@ export function parseText (set, db) {
         const splitStr = sentence.split(' ')
         splitStr.forEach((str, i) => {
           const readString = splitStr.slice(i, splitStr.length)
-          checkStrings(readString, db)
+          checkStrings(readString, db, post.postId)
         })
       })
     })
@@ -121,11 +129,14 @@ export function parseLinks (_cheerio, rootElement, yesterdayOnly) {
 }
 
 export async function fetchPosts (linksArray, config) {
-  const posts = await Promise.all(linksArray.map(link => axios(link, config)))
+  const posts = await Promise.all(linksArray.map(async (link) => {
+    const data = await axios(link, config)
+    return {link, data}
+  }))
   return posts
 }
 
-export function createPostObject (data) {
+export function createPostObject (data, link) {
   const c$ = cheerio.load(data)
   const breadcrumbs = c$('.breadcrumbs')
   const postingTitleText = c$('.postingtitletext')
@@ -140,7 +151,8 @@ export function createPostObject (data) {
     'title': getPostTitle(postingTitleText),
     'category': getPostCategory(postingTitleText),
     'postId': getPostId(c$, postInfos),
-    'text': getPostText(c$)
+    'text': getPostText(c$),
+    'link': BASE_URL.concat(link)
   }
   return thisPost
 }

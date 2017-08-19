@@ -29,4 +29,21 @@ router.get('/dump/:collection', (req, res) => {
   })
 })
 
+router.get('/build', async (req, res) => {
+  // build a random haiku and send back JSON
+  const db = req.db
+  const fives = db.get('fives')
+  const sevens = db.get('sevens')
+
+  const randomFive1 = await fives.aggregate([{ $sample: { size: 1 } }])
+  const randomSeven = await sevens.aggregate([{ $sample: { size: 1 } }])
+  const randomFive2 = await fives.aggregate([{ $sample: { size: 1 } }])
+
+  res.json({
+    'one': randomFive1[0],
+    'two': randomSeven[0],
+    'three': randomFive2[0]
+  })
+})
+
 export default router

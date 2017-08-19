@@ -6,7 +6,7 @@ import express from 'express'
 import logger from 'morgan'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
-import mongo from 'mongodb'
+import mongo from 'mongodb' // eslint-disable-line no-unused-vars
 import monk from 'monk'
 
 import { STATIC_PATH, WEB_PORT } from '../shared/config'
