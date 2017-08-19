@@ -2,9 +2,9 @@
 
 import 'babel-polyfill'
 
-import React from 'react'
+import React from 'react' // eslint-disable-line no-unused-vars
 import ReactDOM from 'react-dom'
-import { AppContainer } from 'react-hot-loader'
+import { AppContainer } from 'react-hot-loader' // eslint-disable-line no-unused-vars
 
 import App from './app'
 import { APP_CONTAINER_SELECTOR } from '../shared/config'

@@ -1,11 +1,11 @@
 // @flow
 
-import React, { Component } from 'react'
+import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import axios from 'axios'
 import cheerio from 'cheerio'
 
-import { BASE_URL, SEARCH_ROOT, SEARCH_URL, POST_URL } from '../shared/config'
-import { fetchPosts, parseLinks } from './helpers'
+import { BASE_URL, SEARCH_ROOT, SEARCH_URL } from '../shared/config'
+import { createPostObject, fetchPosts, parseLinks } from './helpers'
 
 class App extends Component<{}> {
   constructor () {
@@ -48,22 +48,15 @@ class App extends Component<{}> {
       }).then(links => {
         // create XMLHttp requests for each link
         fetchPosts(links, this.axiosConfig).then(posts => {
-          let textResults = []
+          let collection = []
           if (!posts || posts.length <= 0) throw new Error('Unable to retrieve posts')
           posts.forEach(post => {
             if (post.status !== 200) throw new Error('Unexpected result from Craigslist')
-            const c$ = cheerio.load(post.data)
-            const text = c$('#postingbody').text()
-            const textArray = text.trim().split('\n')
-            textArray.forEach(str => {
-              const cleanStr = str.trim()
-              if (cleanStr.length > 0 && !cleanStr.startsWith('QR')) {
-                textResults.push(cleanStr)
-              }
-            })
+            const thisPost = createPostObject(post.data)
+            collection.push(thisPost)
           })
-          return textResults
-        }).then(textResults => {
+          return collection
+        }).then(collection => {
           // console.log(textResults)
           // find 7 - syllable
         })
