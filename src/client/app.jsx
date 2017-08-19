@@ -7,7 +7,7 @@ import cheerio from 'cheerio'
 import { BASE_URL, SEARCH_ROOT, SEARCH_URL } from '../shared/config'
 import { createPostObject, fetchPosts, parseLinks } from './helpers'
 
-class App extends Component<{}> {
+class App extends Component {
   constructor () {
     super()
     this.state = {
@@ -30,6 +30,8 @@ class App extends Component<{}> {
   }
 
   fetchData () {
+    // THIS SHOULD ALL BE MOVED TO SERVER AND RUN ONCE A DAY, SCRAPING ONLY
+    // POSTS FROM THE PREVIOUS DAY
     axios(SEARCH_URL, Object.assign({}, this.axiosConfig, this.searchParams))
       .then(resp => {
         // if response code error, report error
@@ -52,6 +54,7 @@ class App extends Component<{}> {
           if (!posts || posts.length <= 0) throw new Error('Unable to retrieve posts')
           posts.forEach(post => {
             if (post.status !== 200) throw new Error('Unexpected result from Craigslist')
+            // create a data object based on the returned HTML data
             const thisPost = createPostObject(post.data)
             collection.push(thisPost)
           })
