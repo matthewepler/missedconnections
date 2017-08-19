@@ -1,0 +1,14 @@
+{
+  "env": {
+    "browser": true,
+    "jest": true
+  },
+  "extends" : [
+    "standard",
+    "plugin:flowtype/recommended"
+  ],
+  "parser": "babel-eslint",
+  "plugins": [
+    "flowtype"
+  ]
+}
