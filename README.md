@@ -50,6 +50,8 @@ React is certainly overkill for this project. I don't need it. But it's what I'm
 **Why create a DB with all that extra stuff in it?**
 If the application is going to be parsing the data anyway, we might as well save it. As the application changes, we might want to add features that require some of the additional data available on the page. It will be less costly to setup the DB now and scrape as much as possible than doing it later. We can always decide to dump what we don't need later.
 
+As a cool bonus, the server is set to scrape new posts every night.
+
 ### Next Steps
 If I were to keep working, these are the areas I would focus on, in order of priority:  
 

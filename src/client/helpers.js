@@ -11,13 +11,13 @@ export const outros = {
   },
   '2': {
     axis: 'y',
-    top: -100,
-    bottom: 100
+    top: -50,
+    bottom: 50
   },
   '3': {
     axis: 'y',
-    top: 100,
-    bottom: -100
+    top: 50,
+    bottom: -50
   }
 }
 

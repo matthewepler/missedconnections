@@ -90,13 +90,13 @@ class App extends Component {
 
     this.oneAnimation = anime(Object.assign({}, animeProps.bottom, {
       targets: '.one',
-      duration: 7000,
+      duration: 5000,
       delay: 3000,
       easing: 'easeInSine'
     }))
     this.threeAnimation = anime(Object.assign({}, animeProps.top, {
       targets: '.three',
-      duration: 7000,
+      duration: 5000,
       delay: 3000,
       easing: 'easeInSine'
     }))
