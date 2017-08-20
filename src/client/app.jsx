@@ -20,6 +20,10 @@ class App extends Component {
     window.addEventListener('resize', () => {
       centerText()
     })
+
+    window.addEventListener('click', () => {
+      this.fetchHaiku()
+    })
   }
 
   async fetchHaiku () {

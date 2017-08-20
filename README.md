@@ -45,6 +45,7 @@ As a cool bonus, the server is set to scrape new posts every night and the resul
 ## Next Steps
 If I were to keep working, these are the areas I would focus on, in order of priority:  
 
+* make a higher order component, <Haiku /> 
 * write tests
 * add better styling approach (SCSS, JSS, etc.)
 * add autoprefixing for cross-browser support
