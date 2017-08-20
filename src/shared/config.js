@@ -11,3 +11,6 @@ export const APP_CONTAINER_SELECTOR = `.${APP_CONTAINER_CLASS}`
 export const BASE_URL = 'https://newyork.craigslist.org/'
 export const SEARCH_URL = 'search/mis'
 export const SEARCH_ROOT = '.result-row'
+
+export const API_BASE_URL = 'http://localhost:8000'
+export const BUILD_URL = '/build'

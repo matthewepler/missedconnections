@@ -1,105 +1,114 @@
-// @flow
-
 import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import axios from 'axios'
-import cheerio from 'cheerio'
+import anime from 'animejs'
 
-import { BASE_URL, SEARCH_ROOT, SEARCH_URL } from '../shared/config'
-import { createPostObject, fetchPosts, parseLinks } from './helpers'
+import { API_BASE_URL, BUILD_URL } from '../shared/config'
+import { centerText, createHeart, outros } from './helpers'
 
 class App extends Component {
   constructor () {
     super()
     this.state = {
-      status: 'loading',
-      errorMsg: ''
+      status: 'loading'
     }
-    // XMLHttp Requests (Axios)
-    this.axiosConfig = {
-      baseURL: BASE_URL,
-      method: 'get'
-    }
-    this.searchParams = {s: 0}
-
-    // HTML scraping (Cheerio)
-    this.$ = null
-    this.links = []
   }
+
   componentDidMount () {
-    this.fetchData()
+    this.fetchHaiku()
+    centerText()
+    window.addEventListener('resize', () => {
+      centerText()
+    })
   }
 
-  fetchData () {
-    // THIS SHOULD ALL BE MOVED TO SERVER AND RUN ONCE A DAY, SCRAPING ONLY
-    // POSTS FROM THE PREVIOUS DAY
-    axios(SEARCH_URL, Object.assign({}, this.axiosConfig, this.searchParams))
-      .then(resp => {
-        // if response code error, report error
-        if (resp.status !== 200) throw new Error('Host response error')
-
-        // if no elements match critieria, report error
-        this.$ = cheerio.load(resp.data)
-        const rootElement = this.$(SEARCH_ROOT)
-        if (!rootElement || rootElement.length <= 0) throw new Error('No root element found')
-        return rootElement
-      }).then(rootElement => {
-        // get and save <a> links from HTML, returns array of strings
-        const links = parseLinks(this.$, rootElement)
-        if (!links || links.length <= 0) throw new Error('No links were found')
-        return links
-      }).then(links => {
-        // create XMLHttp requests for each link
-        fetchPosts(links, this.axiosConfig).then(posts => {
-          let collection = []
-          if (!posts || posts.length <= 0) throw new Error('Unable to retrieve posts')
-          posts.forEach(post => {
-            if (post.status !== 200) throw new Error('Unexpected result from Craigslist')
-            // create a data object based on the returned HTML data
-            const thisPost = createPostObject(post.data)
-            collection.push(thisPost)
-          })
-          return collection
-        }).then(collection => {
-          // console.log(textResults)
-          // find 7 - syllable
-        })
-      })
-      .catch(err => {
-        console.log('Axios', err)
-        this.UIError(err.message)
-        return false
-      })
+  async fetchHaiku () {
+    const data = await axios.get(API_BASE_URL.concat(BUILD_URL))
+    this.setState({
+      status: 'loaded'
+    })
+    this.buildHaiku(data)
   }
 
-  UIError (errorMsg) {
-    this.setState({ status: false, errorMsg }) // update UI so user is aware and can attempt refresh
+  buildHaiku (data) {
+    const haikuDiv =
+      `<div class='haiku'>
+        <p class='haiku-text one'>${data.data.one.text}</p>
+        <p class='haiku-text two'>${data.data.two.text}</p>
+        <p class='haiku-text three'>${data.data.three.text}</p>
+      </div>`
+
+    document.getElementById('haiku-placeholder').innerHTML = haikuDiv
+    this.setAnimations()
   }
 
-  findLines () {
-    // get the first link and look for any lines
-    // add lines to bin (7 or 5)
-  }
+  destroyHaiku () {
+    this.paragraphAnimation && delete this.paragraphAnmiation
+    this.oneAnimation && delete this.oneAnimation
+    this.threeAnimation && delete this.threeAnimation
 
-  buildHaiku () {
-
-  }
-
-  renderAlertDiv () {
-    if (this.state.status === false) {
-      return (<div>{`${this.state.errorMsg}. Try refreshing or contact support.`}</div>)
-    } else if (this.state.status === 'loading') {
-      return (<div>Loading...</div>)
+    if (this.state.status !== 'loading') {
+      const placeholder = document.getElementById('haiku-placeholder')
+      while (placeholder.lastChild) {
+        placeholder.removeChild(placeholder.lastChild)
+      }
     }
+  }
+
+  setAnimations () {
+    // const roll = 2 // 2 = heart
+    const roll = parseInt(Math.random() * 4)
+    const dir = outros[roll] // see helpers.js
+
+    this.paragraphAnimation = anime({
+      targets: '.haiku',
+      opacity: 0,
+      duration: 4000,
+      delay: 5000,
+      easing: 'easeOutCubic',
+      complete: (anim) => {
+        if (roll === 2) {
+          createHeart() // see helpers.js
+          setTimeout(() => {
+            this.destroyHaiku()
+            this.fetchHaiku()
+          }, 2000)
+        } else {
+          this.destroyHaiku()
+          this.fetchHaiku()
+        }
+      }
+    })
+
+    let animeProps = {}
+    if (dir.axis === 'x') {
+      animeProps.top = { translateX: dir.top }
+      animeProps.bottom = { translateX: dir.bottom }
+    } else {
+      animeProps.top = { translateY: dir.top }
+      animeProps.bottom = { translateY: dir.bottom }
+    }
+
+    this.oneAnimation = anime(Object.assign({}, animeProps.bottom, {
+      targets: '.one',
+      duration: 7000,
+      delay: 3000,
+      easing: 'easeInSine'
+    }))
+    this.threeAnimation = anime(Object.assign({}, animeProps.top, {
+      targets: '.three',
+      duration: 7000,
+      delay: 3000,
+      easing: 'easeInSine'
+    }))
   }
 
   render () {
     return (
-      <div>
-        {this.state.status === 'loading' ? <div>Loading...</div> : ''}
-
-        <div>haiku here</div>
-
-        {!this.state.status ? <div>{`${this.state.errorMsg}. Try refreshing or contact support.`}</div> : ''}
+      <div id='wrapper' className='app-wrapper'>
+        {this.state.status === 'loading'
+          ? <div id='loading'>Loading...</div>
+          : <div id='haiku-placeholder' />
+        }
       </div>
     )
   }

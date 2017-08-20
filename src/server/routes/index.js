@@ -1,7 +1,8 @@
-import { APP_NAME } from '../../shared/config'
+import express from 'express'
+
+import { APP_NAME, BUILD_URL } from '../../shared/config'
 import renderApp from '../render-app'
 
-import express from 'express'
 const router = express.Router()
 
 router.get('/', (req, res) => {
@@ -29,7 +30,7 @@ router.get('/dump/:collection', (req, res) => {
   })
 })
 
-router.get('/build', async (req, res) => {
+router.get(BUILD_URL, async (req, res) => {
   // build a random haiku and send back JSON
   const db = req.db
   const fives = db.get('fives')

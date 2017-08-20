@@ -1,0 +1,86 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  animation: 120s gradient ease alternate infinite;
+  background: linear-gradient(90deg, #008080, #004080, #000080, #400080, #800080,#800040);
+  background-size: 600% 100%;
+}
+
+#loading {
+  color: white;
+}
+
+.app-wrapper {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
+.haiku {
+  color: #FFFFFF;
+  font-family: 'Crete Round', sans-serif;
+  font-size: 2rem;
+}
+
+.haiku-text {
+  margin-bottom: 0.5rem;
+}
+
+/* 
+  Heart and design animation taken directly from:
+  https://codepen.io/miloplacencia/pen/zfsFq;
+*/
+#heart {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px; 
+  height: 90px;
+  margin: -50px -45px;
+  transition:all 1s ease;
+  animation: heartbeat 1s;
+  animation-iteration-count: 2;
+}
+
+#heart:before, #heart:after { 
+  position: absolute; 
+  content: ""; 
+  left: 50px; 
+  top: 0; 
+  width: 50px; 
+  height: 80px; 
+  background: hsl(0,50%,50%); 
+  border-radius: 50px 50px 0 0; 
+  transform: rotate(-45deg); 
+  transform-origin: 0 100%; 
+} 
+
+#heart:after { 
+  left: 0; 
+  transform: rotate(45deg); 
+  transform-origin :100% 100%; 
+} 
+
+@keyframes heartbeat {
+  0% { -webkit-transform: scale(1); }
+  8% { -webkit-transform: scale(0.7);  }
+  17% { -webkit-transform: scale(1.5); }
+  25% { -webkit-transform: scale(0.7); }
+  87.5% { -webkit-transform: scale(0.7); }
+  100%  { -webkit-transform: scale(1); }
+}
+
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%
+  }
+  50% {
+    background-position: 50% 50%
+  }
+  100% {
+    background-position: 100% 50%
+  }
+}

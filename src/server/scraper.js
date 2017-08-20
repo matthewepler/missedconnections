@@ -68,21 +68,21 @@ function cleanWord (word) {
   return cleanWord
 }
 
-export function checkStrings (str, db, id) {
+export function checkStrings (str, db, post) {
   const fives = db.get('fives')
   const sevens = db.get('sevens')
   let phrase = ''
   for (let i = 0; i < str.length; i++) {
-    const newWord = cleanWord(str[i])
+    let newWord = cleanWord(str[i])
     if (syllable(newWord) > 0) {
-      phrase = phrase.concat(` ${cleanWord(str[i])}`).trim()
+      phrase = phrase.concat(` ${newWord}`).trim()
       if (syllable(phrase) < 8) {
         if (syllable(phrase) === 5) {
           // console.log(`5: ${phrase}`)
-          fives.insert({'text': phrase, 'postId': id})
+          fives.insert({'text': phrase, 'post': post})
         } else if (syllable(phrase) === 7) {
           // console.log(`7: ${phrase}`)
-          sevens.insert({'text': phrase, 'postId': id})
+          sevens.insert({'text': phrase, 'postId': post})
           return
         }
       } else {
@@ -100,7 +100,7 @@ export function parseText (set, db) {
         const splitStr = sentence.split(' ')
         splitStr.forEach((str, i) => {
           const readString = splitStr.slice(i, splitStr.length)
-          checkStrings(readString, db, post.postId)
+          checkStrings(readString, db, post)
         })
       })
     })

@@ -8,15 +8,19 @@ import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 import mongo from 'mongodb' // eslint-disable-line no-unused-vars
 import monk from 'monk'
+import schedule from 'node-schedule'
 
 import { STATIC_PATH, WEB_PORT } from '../shared/config'
 import { isProd } from '../shared/util'
-import { initDatabase } from './scraper'
+import { fetchData, initDatabase } from './scraper'
 
 import routes from './routes'
 
 const db = monk('localhost:27017/missed_connections')
 !isProd && initDatabase(db) // dumps existing data!!
+schedule.scheduleJob('0 1 * * *', () => {
+  fetchData(db, true)
+})
 
 const app = express()
 
