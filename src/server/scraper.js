@@ -75,7 +75,7 @@ export async function fetchData (db, yesterdayOnly, searchParams) {
 // clean words of extraneous characters
 function cleanWord (word) {
   if (!word) return ''
-  var cleanWord = word.replace(/[()!,;:.]+/, '')
+  var cleanWord = word.replace(/[()!,;:."]+/, '')
   return cleanWord
 }
 
