@@ -1,4 +1,4 @@
-// @flow
+// require('dotenv').config() // enable if using local environment
 
 export const WEB_PORT = process.env.PORT || 8000
 export const STATIC_PATH = '/static'
@@ -14,3 +14,8 @@ export const SEARCH_ROOT = '.result-row'
 
 export const API_BASE_URL = 'http://localhost:8000'
 export const BUILD_URL = '/build'
+
+export const MONGO_USERNAME = process.env.MONGO_USERNAME
+export const MONGO_PASSWORD = process.env.MONGO_PASSWORD
+export const MONGO_URL = `mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@ds149603.mlab.com:49603/heroku_mzstr9zt`
+export const MONGO_LOCAL_URL = 'localhost:27017/missed_connections'
