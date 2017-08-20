@@ -8,7 +8,6 @@ const axiosConfig = {
   baseURL: BASE_URL,
   method: 'get'
 }
-const searchParams = {s: 0} // used for pagination on craigslist.org
 
 let $ = null // Cheerio wrapper object
 
@@ -20,17 +19,17 @@ export function initDatabase (db) {
   const fives = db.get('fives')
   const sevens = db.get('sevens')
 
-  // clear database 
+  // clear database
   fives.drop()
   sevens.drop()
   posts.drop().then(success => {
     if (!success) throw new Error('Could not drop database')
-    fetchData(db, false) 
+    fetchData(db, false)
   })
 }
 
-async function fetchData (db, yesterdayOnly) {
-  // yesterdayOnly (boolean) - true will return only yesterday's posts, false will return 
+export async function fetchData (db, yesterdayOnly, searchParams) {
+  // yesterdayOnly (boolean) - true will return only yesterday's posts, false will return
   // first 120. Use searchParams object to increase pagination
   const resp = await axios(SEARCH_URL, Object.assign({}, axiosConfig, searchParams))
   if (resp.status !== 200) throw new Error('Host response error')

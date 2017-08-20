@@ -22,9 +22,11 @@ const db = monk(MONGO_URL, (err) => {
 })
 
 // !isProd && initDatabase(db) // dumps existing data, use with extreme caution!!
+// fetchData(db, false, {s: 120}) // add more at will by using this. 3rd arg is query params
+
 schedule.scheduleJob('0 1 * * *', () => {
   // fetch new posts/haikus @ 1AM every night
-  fetchData(db, true) // see scraper.js
+  fetchData(db, true, {s: 0}) // see scraper.js
 })
 
 const app = express()
