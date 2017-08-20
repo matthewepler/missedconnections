@@ -6,6 +6,7 @@ const renderApp = (title) =>
 <html>
   <head>
     <title>${title}</title>
+    <link rel="shortcut icon" href="${STATIC_PATH}/favicon.ico">
     <link rel="stylesheet" href="${STATIC_PATH}/css/styles.css">
     <link href="https://fonts.googleapis.com/css?family=Crete+Round" rel="stylesheet">
   </head>
