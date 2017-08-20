@@ -2,7 +2,7 @@ import React, { Component } from 'react' // eslint-disable-line no-unused-vars
 import axios from 'axios'
 import anime from 'animejs'
 
-import { API_BASE_URL, BUILD_URL } from '../shared/config'
+import { BUILD_URL } from '../shared/config'
 import { centerText, createHeart, outros } from './helpers'
 
 class App extends Component {
@@ -22,7 +22,7 @@ class App extends Component {
   }
 
   async fetchHaiku () {
-    const data = await axios.get(API_BASE_URL.concat(BUILD_URL))
+    const data = await axios.get(BUILD_URL)
     this.setState({
       status: 'loaded'
     })
