@@ -45,5 +45,8 @@ export default {
     new webpack.HotModuleReplacementPlugin(),
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
-  ]
+  ],
+  node: {
+    fs: "empty"
+  }
 }
