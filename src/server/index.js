@@ -21,6 +21,7 @@ const db = monk(MONGO_URL, (err) => {
 })
 !isProd && initDatabase(db) // dumps existing data!!
 schedule.scheduleJob('0 1 * * *', () => {
+  // fetch new posts/haikus @ 1AM every night
   fetchData(db, true)
 })
 
