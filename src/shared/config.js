@@ -12,9 +12,7 @@ export const BASE_URL = 'https://newyork.craigslist.org/'
 export const SEARCH_URL = 'search/mis'
 export const SEARCH_ROOT = '.result-row'
 
-export const API_BASE_URL = process.env.NODE_ENV === 'production'
-  ? `http://localhost:${WEB_PORT}`
-  : `https://localhost:${WEB_PORT}` // required for heroku
+export const API_BASE_URL = `https://localhost:${WEB_PORT}` // remove 's' if local dev'ing
 export const BUILD_URL = '/build'
 
 export const MONGO_USERNAME = process.env.MONGO_USERNAME
