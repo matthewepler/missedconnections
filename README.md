@@ -20,6 +20,15 @@ This app is built with the following tools:
 
 And a bunch of other stuff to support the dev environment that isn't really that important. 
 
+**Project Goals**
+- scrape 5 and 7 syllable phrases from an external source
+- use a database to store phrases
+- make the source text and phrases available via API
+- generate haiku poems randomly from a database
+- use animation to underline the tone of the poems
+- use color and font to engage the viewer
+- deliver on platform that can be accessed easily and with no setup required
+
 ## Design Choices
 **Context**  
 I imagined this would live in a public setting on a large-ish display (despite the NSFW quality of the content). For that reason, I wanted a clean, clear, and bold aesthetic that made the text the center of the show. The screen should be readable from a distance and be compelling enough to encourage a user to stay for multiple poems. 
@@ -45,7 +54,6 @@ As a cool bonus, the server is set to scrape new posts every night and the resul
 ## Next Steps
 If I were to keep working, these are the areas I would focus on, in order of priority:  
 
-* make a higher order component, <Haiku /> 
 * write tests
 * add better styling approach (SCSS, JSS, etc.)
 * add autoprefixing for cross-browser support
