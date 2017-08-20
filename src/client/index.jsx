@@ -1,5 +1,4 @@
-// @flow
-
+// babel-polyfill required for async/await features
 import 'babel-polyfill'
 
 import React from 'react' // eslint-disable-line no-unused-vars
@@ -11,6 +10,7 @@ import { APP_CONTAINER_SELECTOR } from '../shared/config'
 
 const rootEl = document.querySelector(APP_CONTAINER_SELECTOR)
 
+// Hot Module Replacement
 const wrapApp = AppComponent =>
   <AppContainer>
     <AppComponent />
@@ -18,8 +18,8 @@ const wrapApp = AppComponent =>
 
 ReactDOM.render(wrapApp(App), rootEl)
 
+// Hot Module Replacement
 if (module.hot) {
-  // flow-disable-next-line
   module.hot.accept('./app', () => {
     // eslint-disable-next-line global-require
     const NextApp = require('./app').default

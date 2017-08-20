@@ -1,3 +1,4 @@
+// settings for animating first and last lines of text
 export const outros = {
   '0': {
     axis: 'x',
@@ -21,12 +22,14 @@ export const outros = {
   }
 }
 
+// beating heart animation element
 export function createHeart () {
   const heart = document.createElement('div')
   heart.id = 'heart'
   document.getElementById('haiku-placeholder').appendChild(heart)
 }
 
+// re-positions text at center of screen when resized event occurs
 export function centerText () {
   document.getElementById('wrapper').style.height = window.innerHeight + 'px'
 }

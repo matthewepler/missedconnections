@@ -8,10 +8,11 @@ import schedule from 'node-schedule'
 
 import { MONGO_URL, MONGO_LOCAL_URL, STATIC_PATH, WEB_PORT } from '../shared/config' // eslint-disable-line no-unused-vars
 import { isProd } from '../shared/util'
-import { fetchData, initDatabase } from './scraper'
+import { fetchData, initDatabase } from './scraper' // eslint-disable-line no-unused-vars
 
 import routes from './routes'
 
+// MongoDB Connection
 const db = monk(MONGO_URL, (err) => {
   if (err) {
     console.log('Error connecting to database')
@@ -19,10 +20,11 @@ const db = monk(MONGO_URL, (err) => {
   }
   console.log('connected to database')
 })
-!isProd && initDatabase(db) // dumps existing data!!
+
+// !isProd && initDatabase(db) // dumps existing data, use with extreme caution!!
 schedule.scheduleJob('0 1 * * *', () => {
   // fetch new posts/haikus @ 1AM every night
-  fetchData(db, true)
+  fetchData(db, true) // see scraper.js
 })
 
 const app = express()
@@ -32,6 +34,7 @@ app.use(STATIC_PATH, express.static('dist'))
 app.use(STATIC_PATH, express.static('public'))
 app.use(logger('dev'))
 
+// add reference to MongoDB object to the request so we can access it in routes
 app.use((req, res, next) => {
   req.db = db
   next()

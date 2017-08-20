@@ -8,26 +8,30 @@ const axiosConfig = {
   baseURL: BASE_URL,
   method: 'get'
 }
-const searchParams = {s: 0}
-let $ = null // cheerio wrapper object
+const searchParams = {s: 0} // used for pagination on craigslist.org
+
+let $ = null // Cheerio wrapper object
 
 export function initDatabase (db) {
+  // keeping full posts, because why not?
   const posts = db.get('posts')
-  // seperate lines into 5 and 7 syllable collections
-  // faster retreival for random haiku construction by
-  // eliminating need to filter by syllable count
+
+  // seperate collections for faster retreival and random haiku construction
   const fives = db.get('fives')
   const sevens = db.get('sevens')
 
+  // clear database 
   fives.drop()
   sevens.drop()
   posts.drop().then(success => {
     if (!success) throw new Error('Could not drop database')
-    fetchData(db, false) // true will return only yesterday's posts
+    fetchData(db, false) 
   })
 }
 
 async function fetchData (db, yesterdayOnly) {
+  // yesterdayOnly (boolean) - true will return only yesterday's posts, false will return 
+  // first 120. Use searchParams object to increase pagination
   const resp = await axios(SEARCH_URL, Object.assign({}, axiosConfig, searchParams))
   if (resp.status !== 200) throw new Error('Host response error')
 
@@ -52,26 +56,32 @@ async function fetchData (db, yesterdayOnly) {
     thisPost && postObjects.push(thisPost)
   })
 
+  // insert results into database
   const postsCollection = db.get('posts')
   postObjects.forEach(post => {
     postsCollection.insert({post})
   })
+  // feedback in terminal of scraping success
   console.log(`${postObjects.length} posts inserted`)
 
   // look for phrases that have syllable pattern matching haiku style
   parseText(postObjects, db)
 
+  // feedback in terminal of scraping success
   const fiveCount = await db.get('fives').count()
   const sevenCount = await db.get('sevens').count()
   console.log(`${fiveCount} fives inserted. ${sevenCount} sevens inserted`)
 }
 
+// clean words of extraneous characters
 function cleanWord (word) {
   if (!word) return ''
-  var cleanWord = word.replace(/\(\)!,;:\./, '')
+  var cleanWord = word.replace(/[()!,;:.]+/, '')
   return cleanWord
 }
 
+// for each string received, count syllables starting at first word.
+// if 5 or 7 are reached, add the resulting phrase to the database
 export function checkStrings (str, db, post) {
   const fives = db.get('fives')
   const sevens = db.get('sevens')
@@ -96,6 +106,9 @@ export function checkStrings (str, db, post) {
   }
 }
 
+// for each word, create a substring from its position to the end
+// of the string. send that to "checkStrings" to look for syllable
+// patterns
 export function parseText (set, db) {
   set.forEach(post => {
     post.text.forEach(str => {
@@ -111,15 +124,17 @@ export function parseText (set, db) {
   })
 }
 
+// get the <a> links from each of the posts on this page
 export function parseLinks (_cheerio, rootElement, yesterdayOnly) {
   const links = []
   rootElement.map((i, row) => {
+    // if database has already been initiated, we only need yeseterday's posts
     const datetime = new Date(_cheerio(row).find('time').attr('datetime'))
-    // if database has already been initiated, we only need latest posts
     const today = new Date()
     const datetimeZero = new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate())
     const todayZero = new Date(today.getFullYear(), today.getMonth(), today.getDate())
     const absDiff = (todayZero.getTime() - datetimeZero.getTime()) / (1000 * 60 * 60 * 24)
+
     const link = _cheerio(row).find('a').attr('href')
     if (yesterdayOnly) {
       if (absDiff === 1) { // posts from yesterday
@@ -132,6 +147,7 @@ export function parseLinks (_cheerio, rootElement, yesterdayOnly) {
   return links
 }
 
+// for each link we have, fetch the HTML it links to. Should return a post.
 export async function fetchPosts (linksArray, config) {
   const posts = await Promise.all(linksArray.map(async (link) => {
     const data = await axios(link, config)
@@ -140,6 +156,7 @@ export async function fetchPosts (linksArray, config) {
   return posts
 }
 
+// create a post object from the HTML page of a missed connection
 export function createPostObject (data, link) {
   const c$ = cheerio.load(data)
   const breadcrumbs = c$('.breadcrumbs')

@@ -3,6 +3,7 @@ import axios from 'axios'
 import anime from 'animejs'
 
 import { BUILD_URL } from '../shared/config'
+// functionaly DOM manipulations are moved to a separate file
 import { centerText, createHeart, outros } from './helpers'
 
 class App extends Component {
@@ -15,7 +16,7 @@ class App extends Component {
 
   componentDidMount () {
     this.fetchHaiku()
-    centerText()
+    centerText() // see helpers.js
     window.addEventListener('resize', () => {
       centerText()
     })
@@ -23,10 +24,14 @@ class App extends Component {
 
   async fetchHaiku () {
     const data = await axios.get(BUILD_URL)
-    this.setState({
-      status: 'loaded'
-    })
-    this.buildHaiku(data)
+    if (data) {
+      this.setState({
+        status: 'loaded'
+      })
+      this.buildHaiku(data)
+    } else {
+      throw new Error('No data received from database')
+    }
   }
 
   buildHaiku (data) {
@@ -42,6 +47,8 @@ class App extends Component {
   }
 
   destroyHaiku () {
+    // animation objects retain bindings to elements that will be removed
+    // so it is best to delete the objects completely to avoid conflicts
     this.paragraphAnimation && delete this.paragraphAnmiation
     this.oneAnimation && delete this.oneAnimation
     this.threeAnimation && delete this.threeAnimation
@@ -59,6 +66,7 @@ class App extends Component {
     const roll = parseInt(Math.random() * 4)
     const dir = outros[roll] // see helpers.js
 
+    // see http://animejs.com
     this.paragraphAnimation = anime({
       targets: '.haiku',
       opacity: 0,
