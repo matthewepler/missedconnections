@@ -47,6 +47,6 @@ export default {
     new webpack.NoEmitOnErrorsPlugin()
   ],
   node: {
-    fs: "empty"
+    fs: 'empty'
   }
 }
