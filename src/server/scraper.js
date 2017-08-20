@@ -52,6 +52,10 @@ async function fetchData (db, yesterdayOnly) {
     thisPost && postObjects.push(thisPost)
   })
 
+  const postsCollection = db.get('posts')
+  postObjects.forEach(post => {
+    postsCollection.insert({post})
+  })
   console.log(`${postObjects.length} posts inserted`)
 
   // look for phrases that have syllable pattern matching haiku style
