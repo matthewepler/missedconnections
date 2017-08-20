@@ -69,7 +69,7 @@ export async function fetchData (db, yesterdayOnly, searchParams) {
   // feedback in terminal of scraping success
   const fiveCount = await db.get('fives').count()
   const sevenCount = await db.get('sevens').count()
-  console.log(`${fiveCount} fives inserted. ${sevenCount} sevens inserted`)
+  console.log(`${fiveCount} fives, ${sevenCount} sevens total in DB.`)
 }
 
 // clean words of extraneous characters
@@ -87,7 +87,7 @@ export function checkStrings (str, db, post) {
   let phrase = ''
   for (let i = 0; i < str.length; i++) {
     let newWord = cleanWord(str[i])
-    if (syllable(newWord) > 0) {
+    if (syllable(newWord) > 0) { // eliminates numbers, unfortunately.
       phrase = phrase.concat(` ${newWord}`).trim()
       if (syllable(phrase) < 8) {
         if (syllable(phrase) === 5) {
