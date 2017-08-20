@@ -46,5 +46,7 @@ export default {
     new webpack.NamedModulesPlugin(),
     new webpack.NoEmitOnErrorsPlugin()
   ],
-  target: 'node'
+  node: {
+    fs: 'empty'
+  }
 }

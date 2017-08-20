@@ -1,6 +1,8 @@
 # Missed Encounters Haikus
 An application displaying recent Missed Encounters posts from [http://newyork.craigslist.org](http://newyork.craigslist.org)
 
+See the application live here: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
 ## Technical Summary
 This app is built with the following tools:  
 
@@ -15,20 +17,6 @@ This app is built with the following tools:
 * [Anime](http://animejs.com/) - for animation
 
 And a bunch of other stuff to support the dev environment that isn't really that important. 
-
-## Running the App Locally
-Visit `URL` to see the app.
-
-To run the app locally, `cd` to the root directory and open two Terminal windows.  
-
-In one terminal, run the command `yarn start`  
-In the other terminal, run the command `yarn dev:wds`  
-
-**Database**
-In a separate terminal, `cd` to the project root, and then to the `data` directory. Note this path and then run the command:   
-`mongod --dbpath ~/Desktop/haiku/data` 
-
-The argument passed to `--dbpath` is the path to your data folder inside your app.
 
 ## Design Choices
 **Context**
@@ -61,6 +49,27 @@ If I were to keep working, these are the areas I would focus on, in order of pri
 * when user hovers over a line, the animation is paused and the full original post is displayed in a tool-tip
 * build out the API so that others can use it to access full posts or make bots
 * make NSFW version ;)
+
+## Running the App Locally
+You must have the MongoDB credentials in a `.env` file located at the project root. If you do not have this file, contact the author directly.
+
+To run the app locally, `cd` to the root directory and open two Terminal windows.  
+
+In one terminal, run the command `yarn start`  
+In the other terminal, run the command `yarn dev:wds`  
+
+**Database**
+You can either run MongoDB locally or use the URI to connect to [mLab](https://www.mlab.com). The easiest is to just use mLab and to do that you don't have to do anything. The app will communicate directly with the hosted database. If you prefer to run a local database, you will need to install mongo locally and then proceed with the instructions below:
+
+*Running MongoDB Locally*
+In `src/server/index.js`, you will need to change the URL used to connect to the database to `MONGO_LOCAL_URL`, which is defined in `src/shared/config.js`
+
+In a separate terminal, `cd` to the project root, and then to the `data` directory. Note this path and then run the command:   
+`mongod --dbpath ~/Desktop/haiku/data` 
+
+The argument passed to `--dbpath` is the path to your data folder inside your app.
+
+To interact with the database, run `mongo` in a separate terminal window.
 
 ### Dev Notes
 To skip testing when making a push, use `git push --no-verify`  

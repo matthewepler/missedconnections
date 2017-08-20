@@ -1,6 +1,6 @@
-// require('dotenv').config() // enable if using local environment
+if (process.env.NODE_ENV !== 'production') require('dotenv').config()
 
-export const WEB_PORT = process.env.PORT || 8000
+export const WEB_PORT = 5000
 export const STATIC_PATH = '/static'
 export const APP_NAME = 'Missed Connections Haiku App'
 
@@ -12,7 +12,7 @@ export const BASE_URL = 'https://newyork.craigslist.org/'
 export const SEARCH_URL = 'search/mis'
 export const SEARCH_ROOT = '.result-row'
 
-export const API_BASE_URL = 'http://localhost:8000'
+export const API_BASE_URL = `http://localhost:5000`
 export const BUILD_URL = '/build'
 
 export const MONGO_USERNAME = process.env.MONGO_USERNAME

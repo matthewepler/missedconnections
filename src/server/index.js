@@ -1,3 +1,4 @@
+import 'babel-polyfill'
 import compression from 'compression'
 import express from 'express'
 import logger from 'morgan'
@@ -11,7 +12,13 @@ import { fetchData, initDatabase } from './scraper'
 
 import routes from './routes'
 
-const db = monk('mongodb://heroku_mzstr9zt:qocn2phoi005km2nhs7sose15d@ds149603.mlab.com:49603/heroku_mzstr9zt')
+const db = monk(MONGO_URL, (err) => {
+  if (err) {
+    console.log('Error connecting to database')
+    return
+  }
+  console.log('connected to database')
+})
 !isProd && initDatabase(db) // dumps existing data!!
 schedule.scheduleJob('0 1 * * *', () => {
   fetchData(db, true)
