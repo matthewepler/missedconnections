@@ -1,5 +1,5 @@
 # Missed Connections Haikus
-An application displaying recent Missed Connections posts from [http://newyork.craigslist.org](http://newyork.craigslist.org)
+An application displaying recent Missed Connections posts from [http://newyork.craigslist.org](http://newyork.craigslist.org) in the form of haikus. The lines in the poem are chosen at random from a database of pre-parsed phrases.
 
 See the application live here: [Missed Connections Haiku App](https://missedconnectionshaikus.herokuapp.com/)
 
@@ -29,12 +29,12 @@ And a bunch of other stuff to support the dev environment that isn't really that
 - use color and font to engage the viewer
 - deliver on platform that can be accessed easily and with no setup required
 
-## Design Choices
+## Guiding Concepts
 **Context**  
 I imagined this would live in a public setting on a large-ish display (despite the NSFW quality of the content). For that reason, I wanted a clean, clear, and bold aesthetic that made the text the center of the show. The screen should be readable from a distance and be compelling enough to encourage a user to stay for multiple poems. 
 
 **Fate**  
-The top and bottom lines of the text animate to convey the movement of the two people involved in the "missed connection." The application chooses a random animation from four possible outcomes. Only one of these results in the lines coming together in the middle, collapsing the text into a space where love prevails despite the odds. Yay, love!
+The top and bottom lines of the text animate to convey the movement of the two people involved in the "missed connection." The application chooses a random animation from four possible outcomes. Only one of these results in the lines coming together in the middle, collapsing the text into a space where love prevails despite the odds (or a heart animation is displayed). Yay, love!
 
 **Passing of Time**  
 The background gradient shifts slightly overtime to add a sensation of time passing, much as it does leading up to the moment we are caught off-guard by a welcome stranger.
@@ -46,6 +46,9 @@ The timing of the text animation is frequent enough to create anticipation but b
 **Why React?**  
 React is certainly overkill for this project. I don't need it. But it's what I'm comfortable with and it allowed me to get up and running and get a feel for what I needed. Now that I've finished, if I was concerned about size or feeling extra minimal, I might just do it with vanilla JS since that's all I'm really using. 
 
+**Built from scratch**
+This development environment was built from scratch and does not use any project generators. This reduces overall size and makes it easier to troubleshoot if I know exactly what is included.
+
 **Why create a DB with all that extra stuff in it?**  
 If the application is going to be parsing the data anyway, we might as well save it. As the application changes, we might want to add features that require some of the additional data available on the page. It will be less costly to setup the DB now and scrape as much as possible than doing it later. We can always decide to dump what we don't need later.
 
@@ -55,9 +58,8 @@ As a cool bonus, the server is set to scrape new posts every night and the resul
 If I were to keep working, these are the areas I would focus on, in order of priority:  
 
 * write tests
-* add better styling approach (SCSS, JSS, etc.)
+* add better styling approach (SCSS, JSS, Glamour, etc.)
 * add autoprefixing for cross-browser support
-* add more text cleaning (single parenthesis, dangling commas, etc.)
 * explore grammar libraries that could improve quality of results
 * add ability to see original missed connection posts for each poem
 * build out the API to accept queries
@@ -100,3 +102,5 @@ To interact with the database, run `mongo` in a separate terminal window.
 To skip testing when making a push or commit, use `git push --no-verify`   
 
 When running the dev server, you may get occaisonal errors regarding `XMLHttpRequests'. This is an issue with the Webpack Dev Server and goes away in production. 
+
+The `schedule` function is set to fetch posts at 1am every night. Heroku puts the app in idle mode when not in use and therefore the process is never run. To ensure it runs, the app would be better hosted on a server where a proper chron job could be set, one that triggers a GET request, for example. 
