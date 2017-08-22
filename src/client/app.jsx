@@ -21,9 +21,9 @@ class App extends Component {
       centerText()
     })
 
-    window.addEventListener('click', () => {
-      this.fetchHaiku()
-    })
+    // window.addEventListener('click', () => {
+    //   this.fetchHaiku()
+    // })
   }
 
   async fetchHaiku () {
